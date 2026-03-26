@@ -8,7 +8,7 @@ interface ControlButton {
 
 export function CalculatorBoard() {
   return (
-    <div className='w-4/12 h-5/6 grid grid-cols-4 grid-rows-5 bg-blue-950 text-white p-4 rounded-sm gap-3'>
+    <div className='w-4/12 h-5/6 grid grid-cols-4 grid-rows-5 bg-blue-950 text-white p-4 rounded-md gap-3'>
       <CalculatorScreen extraClasses='col-start-1 col-end-5' />
       <CalculatorNumbers />
       <CalculatorControls />

@@ -6,7 +6,7 @@ interface ScreenParam {
 }
 
 export function CalculatorScreen({ extraClasses }: ScreenParam) {
-  const classes = cn("bg-white", extraClasses);
+  const classes = cn("bg-white rounded-md", extraClasses);
 
   return <div className={classes}></div>;
 }
