@@ -1,3 +1,5 @@
 export interface ContainerChildren {
-    children: React.ReactNode
-};
+  children: React.ReactNode;
+}
+
+export type extraClasses = string;
