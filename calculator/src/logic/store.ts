@@ -1,16 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { calcFn } from "./calcFn";
-
-interface CalculatorState {
-  a: number;
-  b: number;
-  operation: null | "add" | "subtract" | "multiply" | "divide";
-  result: number;
-  setA: (value: number) => void;
-  setB: (value: number) => void;
-  calculate: (operation: keyof typeof calcFn) => void;
-}
+import type { CalculatorState } from "../types";
 
 export const useCalculatorStore = create<CalculatorState>()(
   immer((set, get) => ({

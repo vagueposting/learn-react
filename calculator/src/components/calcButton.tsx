@@ -1,17 +1,19 @@
-import type { extraClasses } from "../types";
+import type { extraClasses, buttonType } from "../types";
 import { cn } from "../utils/cn";
 import { useState } from "react";
 
 interface CalcButt {
   text: string;
-  type?: "NUMBER" | "CONTROL";
+  type?: buttonType;
   extraClasses?: extraClasses;
+  clickFn: () => void;
 }
 
 export function CalculatorButton({
   text,
   type = "NUMBER",
   extraClasses,
+  clickFn,
 }: CalcButt) {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -51,6 +53,7 @@ export function CalculatorButton({
       }}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
+      onClick={() => clickFn}
     >
       {text}
     </button>
