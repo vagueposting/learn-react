@@ -20,16 +20,30 @@ export function CalculatorBoard() {
   const [currentNumber, setCurrentNumber] = useImmer(0);
 
   function getDigits(data: number): void {
-    setCurrentNumber(data); // this just gets the current number on display
+    // this just gets the current number on display
+    setCurrentNumber(data);
   }
 
   function getOperation(data: CalculatorState["operation"]): void {
-    setOperation(data);
-    // if a is 0, set number to a
-    // otherwise, don't do anything
-    if (a === 0) {
-      setA(currentNumber);
+    if (data === null) {
+      setA(0);
+      setB(0);
+      setOperation(null);
       setCurrentNumber(0);
+      return;
+    }
+
+    if (data === "equals") {
+      if (operation !== null && a !== 0) {
+        setB(currentNumber);
+        const store = useCalculatorStore.getState();
+        store.calculate(operation);
+        setCurrentNumber(store.result);
+
+        setA(store.result);
+        setOperation(null);
+        // TODO: Continue this for the love of God...
+      }
     }
   }
 
@@ -47,14 +61,15 @@ export function CalculatorBoard() {
 }
 
 function CalculatorNumbers({ collectorFn }: numberCollector) {
-  const [digits, setDigit] = useImmer<number[]>([0]);
+  const [digits, setDigit] = useImmer<number[]>([]);
 
   function handleDigits(num: number) {
     setDigit((draft) => {
       draft.push(num);
+      // send up the digits to CalculatorBoard()
+      const newNumber = Number(draft.join(""));
+      collectorFn(newNumber);
     });
-    // send up the digits to CalculatorBoard()
-    collectorFn(Number(digits.join("")));
   }
 
   const numberPad = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -69,7 +84,7 @@ function CalculatorNumbers({ collectorFn }: numberCollector) {
         <CalculatorButton
           key={n}
           text={n.toString()}
-          clickFn={(n: number) => handleDigits(n)}
+          clickFn={() => handleDigits(n)}
         />
       ))}
     </div>
@@ -107,14 +122,14 @@ function CalculatorControls({ collectorFn }: inputCollector) {
 
   const opMap: Record<
     string,
-    "add" | "subtract" | "multiply" | "divide" | null
+    "add" | "subtract" | "multiply" | "divide" | "equals" | null
   > = {
     "+": "add",
     "-": "subtract",
     "×": "multiply",
     "÷": "divide",
     C: null,
-    "=": null,
+    "=": "equals",
   };
 
   return (

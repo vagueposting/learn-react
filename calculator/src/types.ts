@@ -19,7 +19,7 @@ export interface inputCollector {
 export interface CalculatorState {
   a: number;
   b: number;
-  operation: null | "add" | "subtract" | "multiply" | "divide";
+  operation: null | "add" | "subtract" | "multiply" | "divide" | "equals";
   result: number;
   setA: (value: number) => void;
   setB: (value: number) => void;
