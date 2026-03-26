@@ -1,10 +1,12 @@
 import type { ContainerChildren } from "../types";
 
 export function Container({ children }: ContainerChildren) {
-    return(
-        <div className="flex justify-center items-center h-screen 
-            bg-linear-to-b from-blue-300 to-teal-100">
-            {children}
-        </div>
-    )
+  return (
+    <div
+      className='flex justify-center items-center h-screen 
+            bg-linear-to-b from-teal-100 via-lime-100 to-amber-200'
+    >
+      {children}
+    </div>
+  );
 }

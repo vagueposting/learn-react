@@ -6,7 +6,11 @@ interface ScreenParam {
 }
 
 export function CalculatorScreen({ extraClasses }: ScreenParam) {
-  const classes = cn("bg-white rounded-md", extraClasses);
+  const classes = cn(
+    "rounded-md",
+    "bg-gradient-to-br from-aqua-forest-400 via-aqua-forest-300 to-aqua-forest-400",
+    extraClasses,
+  );
 
   return <div className={classes}></div>;
 }

@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+  /* Aqua forest */
+  --color-aqua-forest-50: #f2f8f1;
+  --color-aqua-forest-100: #e2edde;
+  --color-aqua-forest-200: #c4dbbf;
+  --color-aqua-forest-300: #9ac194;
+  --color-aqua-forest-400: #83b07e;
+  --color-aqua-forest-500: #498445;
+  --color-aqua-forest-600: #356932;
+  --color-aqua-forest-700: #295428;
+  --color-aqua-forest-800: #234322;
+  --color-aqua-forest-900: #1d371d;
+  --color-aqua-forest-950: #0f1f0f;
+}
