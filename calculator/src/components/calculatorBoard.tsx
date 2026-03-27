@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import { useCalculatorStore } from "../logic/store";
 import { useImmer } from "use-immer";
 import { CalculatorButton } from "./calcButton";
 import { CalculatorScreen } from "./calcScreen";
 import type {
-  CalculatorState,
+  CalculatorAction,
   inputCollector,
   numberCollector,
 } from "../types";
@@ -15,35 +16,54 @@ interface ControlButton {
 }
 
 export function CalculatorBoard() {
-  const { a, b, operation, result, setA, setB, setOperation, calculate } =
-    useCalculatorStore();
+  const operation = useCalculatorStore((state) => state.operation);
   const [currentNumber, setCurrentNumber] = useImmer(0);
+  const [resetKey, setResetKey] = useImmer(0);
 
   function getDigits(data: number): void {
     // this just gets the current number on display
     setCurrentNumber(data);
   }
 
-  function getOperation(data: CalculatorState["operation"]): void {
+  function getOperation(data: CalculatorAction): void {
     if (data === null) {
-      setA(0);
-      setB(0);
-      setOperation(null);
+      const store = useCalculatorStore.getState();
+      store.setA(0);
+      store.setB(0);
+      store.setOperation(null);
       setCurrentNumber(0);
+      setResetKey((k) => k + 1);
       return;
     }
 
-    if (data === "equals") {
-      if (operation !== null && a !== 0) {
-        setB(currentNumber);
-        const store = useCalculatorStore.getState();
-        store.calculate(operation);
-        setCurrentNumber(store.result);
+    const store = useCalculatorStore.getState();
 
-        setA(store.result);
-        setOperation(null);
-        // TODO: Continue this for the love of God...
+    if (data === "equals") {
+      if (store.operation !== null && store.a !== 0) {
+        store.setB(currentNumber);
+        store.calculate(store.operation);
+        const newResult = useCalculatorStore.getState().result;
+        setCurrentNumber(newResult);
+
+        store.setA(newResult);
+        store.setB(0);
+        store.setOperation(null);
       }
+      return;
+    }
+
+    if (store.operation !== null && store.a !== 0) {
+      store.setB(currentNumber);
+      store.calculate(store.operation);
+      const newResult = useCalculatorStore.getState().result;
+      setCurrentNumber(0);
+      store.setA(newResult);
+      store.setB(0);
+      store.setOperation(data);
+    } else {
+      store.setA(currentNumber);
+      setCurrentNumber(0);
+      store.setOperation(data);
     }
   }
 
@@ -54,25 +74,26 @@ export function CalculatorBoard() {
         value={currentNumber ? currentNumber : 0}
         operation={operation}
       />
-      <CalculatorNumbers collectorFn={getDigits} />
+      <CalculatorNumbers collectorFn={getDigits} resetKey={resetKey} />
       <CalculatorControls collectorFn={getOperation} />
     </div>
   );
 }
 
-function CalculatorNumbers({ collectorFn }: numberCollector) {
+function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
   const [digits, setDigit] = useImmer<number[]>([]);
 
+  useEffect(() => {
+    setDigit([]);
+  }, [resetKey, setDigit]);
+
   function handleDigits(num: number) {
-    setDigit((draft) => {
-      draft.push(num);
-      // send up the digits to CalculatorBoard()
-      const newNumber = Number(draft.join(""));
-      collectorFn(newNumber);
-    });
+    const newDigits = [...digits, num];
+    setDigit(newDigits);
+    collectorFn(Number(newDigits.join("")));
   }
 
-  const numberPad = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const numberPad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
   return (
     <div
@@ -81,11 +102,17 @@ function CalculatorNumbers({ collectorFn }: numberCollector) {
             grid-cols-3 gap-3'
     >
       {numberPad.map((n: number) => (
-        <CalculatorButton
+        {
+          if (n === 0) {
+            return (<>
+              <CalculatorButton
           key={n}
           text={n.toString()}
           clickFn={() => handleDigits(n)}
         />
+              </>)
+          }
+        }
       ))}
     </div>
   );
@@ -139,15 +166,13 @@ function CalculatorControls({ collectorFn }: inputCollector) {
     >
       {controls.map((c) => {
         return (
-          <>
-            <CalculatorButton
-              text={c.name}
-              key={c.key}
-              type='CONTROL'
-              extraClasses={c.rowClass}
-              clickFn={() => collectorFn(opMap[c.name])}
-            />
-          </>
+          <CalculatorButton
+            key={c.key}
+            text={c.name}
+            type='CONTROL'
+            extraClasses={c.rowClass}
+            clickFn={() => collectorFn(opMap[c.name])}
+          />
         );
       })}
     </div>
