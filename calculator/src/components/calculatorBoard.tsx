@@ -25,8 +25,13 @@ export function CalculatorBoard() {
     setCurrentNumber(data);
   }
 
+  // Inside CalculatorBoard component
   function getOperation(data: CalculatorAction): void {
+    console.log("getOperation called with:", data);
+    console.trace();
+
     if (data === null) {
+      // Clear everything
       const store = useCalculatorStore.getState();
       store.setA(0);
       store.setB(0);
@@ -48,11 +53,16 @@ export function CalculatorBoard() {
         store.setA(newResult);
         store.setB(0);
         store.setOperation(null);
+
+        // Reset inputString for the next number
+        setResetKey((k) => k + 1);
       }
       return;
     }
 
+    // For any operator (+, -, ×, ÷)
     if (store.operation !== null && store.a !== 0) {
+      // There is already a pending operation, compute it first
       store.setB(parseFloat(currentNumber));
       store.calculate(store.operation);
       const newResult = useCalculatorStore.getState().result;
@@ -60,10 +70,15 @@ export function CalculatorBoard() {
       store.setA(newResult);
       store.setB(0);
       store.setOperation(data);
+      // Reset inputString for the next number
+      setResetKey((k) => k + 1);
     } else {
+      // First operation, just store the current number
       store.setA(parseFloat(currentNumber));
       setCurrentNumber("0");
       store.setOperation(data);
+      // Reset inputString for the next number
+      setResetKey((k) => k + 1);
     }
   }
 
@@ -148,6 +163,7 @@ function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
         key='decimal'
         text='.'
         clickFn={() => handleDigits(".")}
+        extraClasses='row-start-4 row-end-5 col-start-3 col-end-4'
       />
     </div>
   );
@@ -206,7 +222,11 @@ function CalculatorControls({ collectorFn }: inputCollector) {
             text={c.name}
             type='CONTROL'
             extraClasses={c.rowClass}
-            clickFn={() => collectorFn(opMap[c.name])}
+            clickFn={() => {
+              console.log("Control button clickFn called for", c.name);
+              console.trace();
+              collectorFn(opMap[c.name]);
+            }}
           />
         );
       })}

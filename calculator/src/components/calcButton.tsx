@@ -45,6 +45,11 @@ export function CalculatorButton({
     extraClasses,
   );
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    clickFn();
+  };
+
   return (
     <button
       className={classes}
@@ -53,7 +58,7 @@ export function CalculatorButton({
       }}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
-      onClick={() => clickFn}
+      onClick={handleClick}
     >
       {text}
     </button>
