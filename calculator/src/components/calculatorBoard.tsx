@@ -95,25 +95,40 @@ function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
 
   const numberPad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
+  const numberKeys = numberPad.map((n: number) => {
+    if (n === 0) {
+      return (
+        <CalculatorButton
+          key={n}
+          text={n.toString()}
+          type='NUMBER'
+          clickFn={() => handleDigits(n)}
+          extraClasses='row-start-4 row-end-5 col-start-1 col-end-3'
+        />
+      );
+    }
+
+    return (
+      <CalculatorButton
+        key={n}
+        text={n.toString()}
+        clickFn={() => handleDigits(n)}
+      />
+    );
+  });
+
   return (
     <div
       className='col-start-1 col-end-4
-            row-start-2 row-end-6 grid grid-rows-3
+            row-start-2 row-end-6 grid grid-rows-4
             grid-cols-3 gap-3'
     >
-      {numberPad.map((n: number) => (
-        {
-          if (n === 0) {
-            return (<>
-              <CalculatorButton
-          key={n}
-          text={n.toString()}
-          clickFn={() => handleDigits(n)}
-        />
-              </>)
-          }
-        }
-      ))}
+      {numberKeys}
+      <CalculatorButton
+        key='decimal'
+        text='.'
+        clickFn={() => handleDigits(n)}
+      />
     </div>
   );
 }
