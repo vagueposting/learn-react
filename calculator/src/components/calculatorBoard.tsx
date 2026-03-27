@@ -68,7 +68,12 @@ export function CalculatorBoard() {
   }
 
   return (
-    <div className='md:w-4/12 h-5/6 grid grid-cols-4 grid-rows-5 bg-linear-to-br from-mist-600 via-neutral-500 to-neutral-400 shadow-2xl text-white p-4 rounded-md gap-3'>
+    <div
+      className='md:w-4/12 h-5/6 grid grid-cols-4 grid-rows-5 bg-linear-to-br from-mist-600 via-neutral-500 to-neutral-400 shadow-2xl text-white pr-6 pl-4 pt-4 pb-4 rounded-md gap-3'
+      style={{
+        boxShadow: "inset -5px -7px 0px 0px rgba(0, 0, 0, 0.20)",
+      }}
+    >
       <CalculatorScreen
         extraClasses='col-start-1 col-end-5'
         value={currentNumber || "0"}
