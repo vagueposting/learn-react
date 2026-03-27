@@ -17,10 +17,10 @@ interface ControlButton {
 
 export function CalculatorBoard() {
   const operation = useCalculatorStore((state) => state.operation);
-  const [currentNumber, setCurrentNumber] = useImmer(0);
+  const [currentNumber, setCurrentNumber] = useImmer<string>("0");
   const [resetKey, setResetKey] = useImmer(0);
 
-  function getDigits(data: number): void {
+  function getDigits(data: string): void {
     // this just gets the current number on display
     setCurrentNumber(data);
   }
@@ -31,7 +31,7 @@ export function CalculatorBoard() {
       store.setA(0);
       store.setB(0);
       store.setOperation(null);
-      setCurrentNumber(0);
+      setCurrentNumber("0");
       setResetKey((k) => k + 1);
       return;
     }
@@ -40,10 +40,10 @@ export function CalculatorBoard() {
 
     if (data === "equals") {
       if (store.operation !== null && store.a !== 0) {
-        store.setB(currentNumber);
+        store.setB(parseFloat(currentNumber));
         store.calculate(store.operation);
         const newResult = useCalculatorStore.getState().result;
-        setCurrentNumber(newResult);
+        setCurrentNumber(newResult.toString());
 
         store.setA(newResult);
         store.setB(0);
@@ -53,16 +53,16 @@ export function CalculatorBoard() {
     }
 
     if (store.operation !== null && store.a !== 0) {
-      store.setB(currentNumber);
+      store.setB(parseFloat(currentNumber));
       store.calculate(store.operation);
       const newResult = useCalculatorStore.getState().result;
-      setCurrentNumber(0);
+      setCurrentNumber("0");
       store.setA(newResult);
       store.setB(0);
       store.setOperation(data);
     } else {
-      store.setA(currentNumber);
-      setCurrentNumber(0);
+      store.setA(parseFloat(currentNumber));
+      setCurrentNumber("0");
       store.setOperation(data);
     }
   }
@@ -71,7 +71,7 @@ export function CalculatorBoard() {
     <div className='md:w-4/12 h-5/6 grid grid-cols-4 grid-rows-5 bg-linear-to-br from-mist-600 via-neutral-500 to-neutral-400 shadow-2xl text-white p-4 rounded-md gap-3'>
       <CalculatorScreen
         extraClasses='col-start-1 col-end-5'
-        value={currentNumber ? currentNumber : 0}
+        value={currentNumber || "0"}
         operation={operation}
       />
       <CalculatorNumbers collectorFn={getDigits} resetKey={resetKey} />
@@ -81,16 +81,20 @@ export function CalculatorBoard() {
 }
 
 function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
-  const [digits, setDigit] = useImmer<number[]>([]);
+  const [inputString, setInputString] = useImmer<string>("");
 
   useEffect(() => {
-    setDigit([]);
-  }, [resetKey, setDigit]);
+    setInputString("");
+  }, [resetKey, setInputString]);
 
-  function handleDigits(num: number) {
-    const newDigits = [...digits, num];
-    setDigit(newDigits);
-    collectorFn(Number(newDigits.join("")));
+  function handleDigits(value: string) {
+    if (value === "." && inputString.includes(".")) return;
+
+    const newString = inputString + value;
+
+    setInputString(newString);
+
+    collectorFn(newString);
   }
 
   const numberPad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
@@ -102,7 +106,7 @@ function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
           key={n}
           text={n.toString()}
           type='NUMBER'
-          clickFn={() => handleDigits(n)}
+          clickFn={() => handleDigits(n.toString())}
           extraClasses='row-start-4 row-end-5 col-start-1 col-end-3'
         />
       );
@@ -112,7 +116,7 @@ function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
       <CalculatorButton
         key={n}
         text={n.toString()}
-        clickFn={() => handleDigits(n)}
+        clickFn={() => handleDigits(n.toString())}
       />
     );
   });
@@ -127,7 +131,7 @@ function CalculatorNumbers({ collectorFn, resetKey }: numberCollector) {
       <CalculatorButton
         key='decimal'
         text='.'
-        clickFn={() => handleDigits(n)}
+        clickFn={() => handleDigits(".")}
       />
     </div>
   );

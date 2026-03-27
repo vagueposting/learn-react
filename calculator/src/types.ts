@@ -9,7 +9,7 @@ export type extraClasses = string;
 export type buttonType = "NUMBER" | "CONTROL";
 
 export interface numberCollector {
-  collectorFn: (num: number) => void;
+  collectorFn: (num: string) => void;
   resetKey: number;
 }
 

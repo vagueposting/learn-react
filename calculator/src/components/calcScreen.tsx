@@ -3,7 +3,7 @@ import { cn } from "../utils/cn";
 
 interface ScreenParam {
   extraClasses?: extraClasses;
-  value: number;
+  value: string;
   operation?: CalculatorState["operation"];
 }
 
